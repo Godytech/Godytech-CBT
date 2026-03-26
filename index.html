@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GODYTECH – Data Science CBT Examination</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0b0f1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #f97316;
+    --gold: #fbbf24;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --correct: #10b981;
+    --wrong: #ef4444;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Background grid ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; position: relative; z-index: 1; }
+  .screen.active { display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* ══════════════════════════════
+     COVER SCREEN
+  ══════════════════════════════ */
+  #cover {
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .logo-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 24px;
+  }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--accent), #0066ff);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 15px;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(0,212,255,.35);
+  }
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 18px;
+    letter-spacing: .04em;
+  }
+  .logo-text span { color: var(--accent); }
+
+  .cover-badge {
+    display: inline-block;
+    background: rgba(0,212,255,.1);
+    border: 1px solid rgba(0,212,255,.3);
+    color: var(--accent);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 50px;
+    margin-bottom: 20px;
+  }
+
+  .cover-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(26px, 5vw, 42px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    max-width: 680px;
+  }
+  .cover-title em { color: var(--accent); font-style: normal; }
+
+  .cover-sub {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 500px;
+    margin: 0 auto 36px;
+    line-height: 1.6;
+  }
+
+  .cover-stats {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .stat-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stat-pill .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .dot-blue { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .dot-orange { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); }
+  .dot-gold { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+
+  .name-form {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%; max-width: 480px;
+    margin: 0 auto;
+  }
+  .name-form label {
+    display: block;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .name-form input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 13px 16px;
+    margin-bottom: 20px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .name-form input:focus { border-color: var(--accent); }
+
+  .btn-start {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #0066ff);
+    border: none; border-radius: var(--radius);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 16px;
+    padding: 14px;
+    cursor: pointer;
+    letter-spacing: .04em;
+    transition: opacity .2s, transform .15s;
+    box-shadow: 0 4px 20px rgba(0,212,255,.25);
+  }
+  .btn-start:hover { opacity: .9; transform: translateY(-1px); }
+
+  /* ══════════════════════════════
+     QUIZ SCREEN
+  ══════════════════════════════ */
+  #quiz {
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .quiz-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: sticky; top: 0; z-index: 10;
+  }
+
+  .qh-brand {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 13px;
+    letter-spacing: .03em;
+  }
+  .qh-brand span { color: var(--accent); }
+
+  .timer-wrap {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 18px;
+  }
+  .timer-wrap svg { opacity: .7; }
+  #timer { color: var(--accent); }
+  #timer.danger { color: var(--wrong); animation: pulse .6s infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .progress-wrap { flex: 1; min-width: 160px; }
+  .progress-bar-bg {
+    height: 6px;
+    background: var(--border);
+    border-radius: 50px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #0066ff);
+    border-radius: 50px;
+    transition: width .4s ease;
+  }
+  .progress-label {
+    font-size: 11px; color: var(--muted);
+    margin-top: 5px; text-align: right;
+  }
+
+  /* Question area */
+  .quiz-body {
+    flex: 1;
+    padding: 36px 24px 100px;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .q-number {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .q-text {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(16px, 2.5vw, 20px);
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 28px;
+    color: var(--text);
+  }
+
+  .options-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .option-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14.5px;
+    padding: 16px 20px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .2s, background .2s, transform .1s;
+    display: flex; align-items: flex-start; gap: 14px;
+    line-height: 1.5;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(0,212,255,.06);
+    transform: translateX(3px);
+  }
+  .option-label {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 28px; height: 28px;
+    background: var(--surface2);
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 13px;
+    flex-shrink: 0;
+    transition: background .2s;
+  }
+  .option-btn.selected {
+    border-color: var(--accent);
+    background: rgba(0,212,255,.08);
+  }
+  .option-btn.selected .option-label {
+    background: var(--accent); color: #000;
+  }
+  .option-btn.correct {
+    border-color: var(--correct);
+    background: rgba(16,185,129,.1);
+  }
+  .option-btn.correct .option-label { background: var(--correct); color: #fff; }
+  .option-btn.wrong {
+    border-color: var(--wrong);
+    background: rgba(239,68,68,.1);
+  }
+  .option-btn.wrong .option-label { background: var(--wrong); color: #fff; }
+
+  .quiz-footer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    z-index: 10;
+  }
+  .q-counter {
+    font-size: 13px; color: var(--muted);
+  }
+  .q-counter strong { color: var(--text); }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--accent), #0066ff);
+    border: none; border-radius: var(--radius);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 14px;
+    padding: 12px 28px;
+    cursor: pointer;
+    letter-spacing: .04em;
+    transition: opacity .2s;
+    box-shadow: 0 4px 16px rgba(0,212,255,.2);
+  }
+  .btn-next:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-next:not(:disabled):hover { opacity: .88; }
+
+  .btn-skip {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-skip:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  .btn-prev {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-prev:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .btn-prev:disabled { opacity: .25; cursor: not-allowed; }
+
+  /* ══════════════════════════════
+     RESULT SCREEN
+  ══════════════════════════════ */
+  #result {
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px 60px;
+  }
+
+  .result-header {
+    text-align: center;
+    margin-bottom: 40px;
+    width: 100%;
+    max-width: 700px;
+  }
+  .result-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 14px;
+    margin-bottom: 24px;
+    letter-spacing: .04em;
+  }
+  .result-logo span { color: var(--accent); }
+
+  .score-ring-wrap { display: flex; justify-content: center; margin-bottom: 24px; }
+  .score-ring {
+    position: relative;
+    width: 160px; height: 160px;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .score-percent {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 36px;
+    line-height: 1;
+  }
+  .score-label { font-size: 11px; color: var(--muted); letter-spacing: .08em; }
+
+  .result-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .result-grade {
+    display: inline-block;
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-weight: 700; font-size: 13px;
+    letter-spacing: .08em;
+    margin-bottom: 6px;
+  }
+  .result-remark { color: var(--muted); font-size: 14px; }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%; max-width: 500px;
+    margin-bottom: 36px;
+  }
+  .rstat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+  }
+  .rstat-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px; font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .rstat-key { font-size: 11px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+
+  .review-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 700;
+    margin-bottom: 16px;
+    width: 100%; max-width: 700px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .review-list {
+    width: 100%; max-width: 700px;
+    display: flex; flex-direction: column; gap: 16px;
+    margin-bottom: 36px;
+  }
+  .review-item {
+    background: var(--surface);
+    border-left: 3px solid var(--border);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 16px 18px;
+  }
+  .review-item.r-correct { border-left-color: var(--correct); }
+  .review-item.r-wrong { border-left-color: var(--wrong); }
+  .review-item.r-skip { border-left-color: var(--muted); }
+  .ri-q { font-size: 13px; font-weight: 600; margin-bottom: 8px; line-height: 1.5; }
+  .ri-ans { font-size: 12px; color: var(--muted); }
+  .ri-ans strong { color: var(--correct); }
+  .ri-user { color: var(--wrong); }
+
+  .btn-retry {
+    background: linear-gradient(135deg, var(--accent), #0066ff);
+    border: none; border-radius: var(--radius);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 15px;
+    padding: 14px 40px;
+    cursor: pointer;
+    letter-spacing: .04em;
+    transition: opacity .2s;
+    box-shadow: 0 4px 20px rgba(0,212,255,.25);
+  }
+  .btn-retry:hover { opacity: .88; }
+
+  .footer-brand {
+    margin-top: 40px;
+    font-size: 10px; color: var(--muted);
+    text-align: center;
+    letter-spacing: .06em;
+  }
+  .footer-brand strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- ══ COVER ══ -->
+<div id="cover" class="screen active">
+  <div class="logo-wrap">
+    <div class="logo-icon">GT</div>
+    <div class="logo-text">GODY<span>TECH</span></div>
+  </div>
+  <div class="cover-badge">E-Learning Platform</div>
+  <h1 class="cover-title">Introduction to <em>Data Science</em> — CBT Examination</h1>
+  <p class="cover-sub">A computer-based test covering core concepts in Data Science for 100-level students. Read each question carefully before selecting your answer.</p>
+
+  <div class="cover-stats">
+    <div class="stat-pill"><span class="dot dot-blue"></span> 50 Questions</div>
+    <div class="stat-pill"><span class="dot dot-orange"></span> 45 Minutes</div>
+    <div class="stat-pill"><span class="dot dot-gold"></span> 100 Marks</div>
+  </div>
+
+  <div class="name-form">
+    <label for="studentName">Your Full Name</label>
+    <input type="text" id="studentName" placeholder="e.g. Chukwuemeka Obiora" autocomplete="off"/>
+    <label for="matric">Matric Number</label>
+    <input type="text" id="matric" placeholder="e.g. CSC/100/2025/001" autocomplete="off"/>
+    <button class="btn-start" onclick="startQuiz()">Begin Examination →</button>
+  </div>
+  <div class="footer-brand" style="margin-top:24px">Powered by <strong>GODYTECH</strong> E-Learning</div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="quiz" class="screen">
+  <div class="quiz-header">
+    <div class="qh-brand">GODY<span>TECH</span></div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="progress-label" id="progressLabel">0 / 50</div>
+    </div>
+    <div class="timer-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span id="timer">45:00</span>
+    </div>
+  </div>
+
+  <div class="quiz-body" id="quizBody"></div>
+
+  <div class="quiz-footer">
+    <div class="q-counter">Question <strong id="qNum">1</strong> of 50</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-prev" id="btnPrev" onclick="prevQuestion()">← Prev</button>
+      <button class="btn-skip" id="btnSkip" onclick="skipQuestion()">Skip</button>
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RESULT ══ -->
+<div id="result" class="screen">
+  <div class="result-header">
+    <div class="result-logo">GODY<span>TECH</span> — Examination Result</div>
+    <div class="score-ring-wrap">
+      <div class="score-ring">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="68" fill="none" stroke="#1a2236" stroke-width="12"/>
+          <circle cx="80" cy="80" r="68" fill="none" stroke="url(#rg)" stroke-width="12"
+            stroke-dasharray="427" stroke-dashoffset="427" stroke-linecap="round" id="ringArc"/>
+          <defs>
+            <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00d4ff"/>
+              <stop offset="100%" stop-color="#0066ff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="score-ring-center">
+          <div class="score-percent" id="scorePercent">0%</div>
+          <div class="score-label">SCORE</div>
+        </div>
+      </div>
+    </div>
+    <div class="result-name" id="resultName"></div>
+    <div class="result-grade" id="resultGrade"></div>
+    <div class="result-remark" id="resultRemark"></div>
+  </div>
+
+  <div class="result-stats">
+    <div class="rstat"><div class="rstat-val" id="rsCorrect" style="color:var(--correct)">0</div><div class="rstat-key">Correct</div></div>
+    <div class="rstat"><div class="rstat-val" id="rsWrong" style="color:var(--wrong)">0</div><div class="rstat-key">Wrong</div></div>
+    <div class="rstat"><div class="rstat-val" id="rsSkip" style="color:var(--muted)">0</div><div class="rstat-key">Skipped</div></div>
+  </div>
+
+  <div class="review-title">📋 Answer Review</div>
+  <div class="review-list" id="reviewList"></div>
+
+  <button class="btn-retry" onclick="retryQuiz()">↺ Retry Examination</button>
+  <div class="footer-brand">Powered by <strong>GODYTECH</strong> E-Learning Platform</div>
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  // ─── MAJOR COMPONENTS OF DATA SCIENCE ───
+  {q:"Which of the following best describes 'Data Science' as a discipline?",
+   o:["The study of computer hardware systems used in data processing","An interdisciplinary field that extracts knowledge and insights from structured and unstructured data","A branch of mathematics focused solely on statistical modelling","A software engineering field concerned only with database management"],
+   a:1},
+  {q:"Which component of Data Science is primarily responsible for extracting patterns from large datasets using algorithms?",
+   o:["Data Visualization","Database Administration","Machine Learning","Network Engineering"],
+   a:2},
+  {q:"Which of the following is NOT considered a major component of Data Science?",
+   o:["Statistics","Domain Expertise","Machine Learning","System Hardware Maintenance"],
+   a:3},
+  {q:"The intersection of 'hacking skills', 'statistics', and 'substantive expertise' defines what concept in Data Science?",
+   o:["The Data Engineering Triangle","The Data Scientist's Unicorn Model","The Conway Data Science Venn Diagram","The Analytics Competency Framework"],
+   a:2},
+  {q:"Which component of Data Science deals with communicating findings through visual representations?",
+   o:["Predictive Modelling","Data Visualization","Feature Engineering","Data Warehousing"],
+   a:1},
+
+  // ─── DATA SCIENTIST ───
+  {q:"A Data Scientist is BEST described as someone who:",
+   o:["Installs and maintains database servers in an organization","Combines statistical analysis, programming, and domain knowledge to derive insights from data","Designs user interfaces for data entry applications","Manages network infrastructure for data transmission"],
+   a:1},
+  {q:"Which skill is LEAST typically associated with a Data Scientist's core competencies?",
+   o:["Statistical analysis","Machine learning","Civil engineering","Programming"],
+   a:2},
+  {q:"Which programming language is most widely used by Data Scientists for analysis and modelling?",
+   o:["COBOL","Pascal","Python","Assembly Language"],
+   a:2},
+  {q:"A Data Scientist who focuses mainly on building and deploying machine learning models into production systems is sometimes called a:",
+   o:["Data Analyst","Data Architect","ML Engineer","Database Administrator"],
+   a:2},
+  {q:"Which of the following best distinguishes a Data Scientist from a Data Analyst?",
+   o:["Data Scientists only work with structured data; Analysts work with unstructured data","Data Scientists build predictive models and apply machine learning; Analysts focus on describing past data","Data Scientists manage databases; Analysts manage networks","Data Scientists write hardware drivers; Analysts write SQL queries"],
+   a:1},
+
+  // ─── TERMINOLOGIES ───
+  {q:"In data environments, a 'data lake' refers to:",
+   o:["A structured relational database used for transactional processing","A centralized repository that stores raw data in its native format until needed","A compressed archive of historical database backups","A visualization dashboard for real-time data streams"],
+   a:1},
+  {q:"Which term describes the process of converting raw data into a format suitable for analysis?",
+   o:["Data Mining","Data Wrangling","Data Governance","Data Replication"],
+   a:1},
+  {q:"'ETL' in data environments stands for:",
+   o:["Extract, Transfer, Load","Extract, Transform, Load","Evaluate, Transfer, Link","Encode, Transform, Launch"],
+   a:1},
+  {q:"A 'data warehouse' is BEST described as:",
+   o:["A physical room where servers are stored","A subject-oriented, integrated, time-variant, non-volatile collection of data for decision support","A cloud-based backup system for operational databases","A real-time streaming platform for IoT devices"],
+   a:1},
+  {q:"Which term refers to a small, subject-specific subset of a data warehouse?",
+   o:["Data Hub","Data Pond","Data Mart","Data Vault"],
+   a:2},
+  {q:"'Big Data' is commonly characterized by which three V's?",
+   o:["Volume, Velocity, Variety","Value, Validity, Velocity","Volume, Validity, Visualization","Variety, Veracity, Virtualization"],
+   a:0},
+  {q:"In data science terminology, 'feature' refers to:",
+   o:["A software function used to filter datasets","An individual measurable property or characteristic of the data being observed","A type of database index that speeds up queries","A hardware component that improves processing speed"],
+   a:1},
+  {q:"Which term describes the process of discovering patterns and relationships in large datasets without a predefined hypothesis?",
+   o:["Confirmatory Data Analysis","Exploratory Data Analysis","Predictive Data Modelling","Prescriptive Analytics"],
+   a:1},
+
+  // ─── TYPES AND CLASSIFICATION OF DIGITAL DATA ───
+  {q:"Which of the following is an example of STRUCTURED data?",
+   o:["A collection of customer tweets","A relational database table of employee records","A folder of scanned PDF invoices","A video recording of a board meeting"],
+   a:1},
+  {q:"Emails, images, audio files, and social media posts are examples of which type of data?",
+   o:["Structured Data","Semi-structured Data","Unstructured Data","Transactional Data"],
+   a:2},
+  {q:"XML and JSON files are examples of which data classification?",
+   o:["Structured Data","Unstructured Data","Semi-structured Data","Binary Data"],
+   a:2},
+  {q:"Which of the following correctly classifies data by its format of storage?",
+   o:["Qualitative vs Quantitative","Structured, Semi-structured, and Unstructured","Primary vs Secondary","Nominal, Ordinal, and Interval"],
+   a:1},
+  {q:"Data that is collected for the first time directly from the original source is referred to as:",
+   o:["Secondary data","Tertiary data","Primary data","Derived data"],
+   a:2},
+  {q:"Which type of data scale has a true zero point, making ratios meaningful?",
+   o:["Nominal Scale","Ordinal Scale","Interval Scale","Ratio Scale"],
+   a:3},
+  {q:"Temperature measured in Celsius is an example of which data scale?",
+   o:["Ratio Scale","Nominal Scale","Ordinal Scale","Interval Scale"],
+   a:3},
+
+  // ─── DATA COLLECTION ───
+  {q:"Which of the following is a PRIMARY method of data collection?",
+   o:["Downloading data from a public government website","Purchasing a dataset from a third-party vendor","Conducting a survey or interview with respondents","Accessing data from a company's historical records"],
+   a:2},
+  {q:"Web scraping is a data collection technique that involves:",
+   o:["Manually entering data into spreadsheets from printed documents","Automatically extracting data from websites using software tools","Conducting face-to-face interviews with web users","Surveying internet service providers for usage statistics"],
+   a:1},
+  {q:"Which of the following best describes 'data crowdsourcing'?",
+   o:["Collecting data using IoT sensors installed in remote locations","Gathering data from a large group of people via online platforms or apps","Purchasing datasets from specialized market research firms","Extracting data from internal enterprise database systems"],
+   a:1},
+  {q:"Which challenge is most commonly associated with data collected from social media platforms?",
+   o:["Data is always structured and easy to process","Data is highly reliable and free from bias","Data may contain noise, bias, and privacy concerns","Data is always collected with full user consent"],
+   a:2},
+
+  // ─── DATA PREPARATION AND CLEANING ───
+  {q:"Which of the following is the FIRST step typically taken in the data preparation process?",
+   o:["Building a predictive model","Data collection and importing","Deploying the model to production","Visualizing final results"],
+   a:1},
+  {q:"'Imputation' in data cleaning refers to:",
+   o:["Removing all rows with any missing values from a dataset","Replacing missing values with estimated or calculated values","Encrypting sensitive data fields before analysis","Normalizing numerical features to a common scale"],
+   a:1},
+  {q:"Which data quality issue involves having the same record appearing more than once in a dataset?",
+   o:["Missing Values","Outliers","Duplicate Records","Inconsistent Formatting"],
+   a:2},
+  {q:"Normalizing data in preparation for analysis means:",
+   o:["Removing all categorical variables from the dataset","Scaling numerical values to a standard range such as 0 to 1","Converting text data into numerical codes","Splitting the dataset into training and testing subsets"],
+   a:1},
+  {q:"An 'outlier' in a dataset is best described as:",
+   o:["A data point that is identical to the mean of its column","A data value that deviates significantly from other observations in the dataset","A missing value that has been filled using imputation","A categorical variable that has been encoded numerically"],
+   a:1},
+  {q:"Which technique splits a dataset into two parts — one used to train a model and one used to evaluate its performance?",
+   o:["Data Normalization","Cross-validation Splitting","Train-Test Split","Feature Scaling"],
+   a:2},
+
+  // ─── ANALYSIS STRATEGIES ───
+  {q:"Which analysis strategy seeks to understand WHY an event occurred by examining historical data in detail?",
+   o:["Descriptive Analytics","Prescriptive Analytics","Diagnostic Analytics","Predictive Analytics"],
+   a:2},
+  {q:"Which analytical strategy answers the question: 'What is likely to happen in the future?'",
+   o:["Diagnostic Analytics","Descriptive Analytics","Prescriptive Analytics","Predictive Analytics"],
+   a:3},
+  {q:"Prescriptive Analytics differs from Predictive Analytics in that it:",
+   o:["Only describes past events using summary statistics","Identifies the root cause of a past event","Recommends specific actions to achieve a desired outcome","Uses regression models to forecast future values"],
+   a:2},
+  {q:"Descriptive Analytics is primarily concerned with:",
+   o:["Forecasting future customer behaviour using machine learning","Recommending optimal business strategies based on simulation","Summarizing historical data to understand what has happened","Identifying the root cause of a recent system failure"],
+   a:2},
+
+  // ─── ANALYTICS TOOLS ───
+  {q:"Which of the following is a widely used open-source tool for data visualization and business intelligence?",
+   o:["Microsoft Access","Apache Kafka","Tableau Public / Apache Superset","Oracle Financials"],
+   a:2},
+  {q:"Microsoft Power BI is primarily used for:",
+   o:["Writing and executing machine learning algorithms","Data visualization and interactive business intelligence reporting","Managing relational database schemas","Network traffic monitoring and analysis"],
+   a:1},
+  {q:"Which tool is specifically designed for distributed storage and processing of very large datasets?",
+   o:["Microsoft Excel","Apache Hadoop","Google Sheets","LibreOffice Calc"],
+   a:1},
+  {q:"R and Python are both examples of:",
+   o:["Database management systems used for structured data storage","Programming languages widely used for statistical computing and data analysis","Network configuration tools used by system administrators","Markup languages used for designing web pages"],
+   a:1},
+  {q:"Which of the following is a cloud-based data warehousing solution?",
+   o:["MySQL Workbench","Jupyter Notebook","Google BigQuery","Microsoft Word"],
+   a:2},
+  {q:"Jupyter Notebook is best described as:",
+   o:["A relational database management system for enterprise use","An interactive computing environment used for writing and running data science code","A business intelligence dashboard for non-technical users","A version control system for managing data science projects"],
+   a:1},
+
+  // ─── HARDWARE AND SOFTWARE ───
+  {q:"Which hardware component is MOST critical for speeding up deep learning model training in data science?",
+   o:["Hard Disk Drive (HDD)","Graphics Processing Unit (GPU)","Network Interface Card (NIC)","Random Access Memory (RAM) Cache"],
+   a:1},
+  {q:"In the context of data science infrastructure, 'cloud computing' refers to:",
+   o:["Using local servers installed within an organization's building","Delivering computing resources such as storage and processing over the internet","A type of machine learning algorithm that runs on distributed systems","A network topology used to connect data center components"],
+   a:1},
+  {q:"Which of the following is an example of data science SOFTWARE rather than hardware?",
+   o:["A GPU cluster used for model training","A solid-state drive used for fast data retrieval","TensorFlow, an open-source machine learning framework","A server rack installed in a data center"],
+   a:2},
+  {q:"A 'server farm' or 'data center' in data science infrastructure primarily provides:",
+   o:["User interface design for data dashboards","Scalable storage, computing power, and networking for processing large datasets","Physical security for printed data records","Electricity supply management for office computers"],
+   a:1},
+  {q:"Which of the following storage technologies offers the FASTEST data read/write speeds for data science workloads?",
+   o:["Magnetic Tape Storage","Optical Disc (DVD)","Solid State Drive (SSD)","Traditional Hard Disk Drive (HDD)"],
+   a:2},
+
+  // ─── MIXED / INTEGRATIVE ───
+  {q:"The phrase 'garbage in, garbage out' (GIGO) in data science refers to:",
+   o:["The need to regularly delete old files from a database system","The principle that poor-quality input data leads to poor-quality analytical results","A technique for compressing large datasets before processing","A method for removing outliers from a training dataset"],
+   a:1},
+  {q:"Which of the following BEST represents the typical sequence of a data science workflow?",
+   o:["Model Deployment → Data Collection → Analysis → Visualization","Data Collection → Data Cleaning → Exploratory Analysis → Modelling → Deployment","Visualization → Data Cleaning → Data Collection → Modelling","Modelling → Deployment → Data Collection → Analysis"],
+   a:1},
+];
+
+// ── State ──
+let questions = [], userAnswers = [], current = 0, timerInterval = null, timeLeft = 35*60;
+let studentName = '', matricNo = '';
+// Display offset: show 45:00 at start but only run 35 minutes real time
+const DISPLAY_OFFSET = 10 * 60; // add 10 min to display only
+
+function shuffle(arr){ return arr.sort(()=>Math.random()-.5); }
+
+function startQuiz(){
+  studentName = document.getElementById('studentName').value.trim() || 'Student';
+  matricNo    = document.getElementById('matric').value.trim() || '—';
+  questions = shuffle([...ALL_QUESTIONS]).slice(0,50);
+  userAnswers = new Array(50).fill(null);
+  current = 0; timeLeft = 35*60;
+  show('quiz');
+  renderQuestion();
+  startTimer();
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    const el = document.getElementById('timer');
+    const displayTime = timeLeft + DISPLAY_OFFSET; // show 45:xx while real is 35:xx
+    const m = String(Math.floor(displayTime/60)).padStart(2,'0');
+    const s = String(displayTime%60).padStart(2,'0');
+    el.textContent = m+':'+s;
+    if(timeLeft<=300) el.classList.add('danger'); else el.classList.remove('danger');
+    if(timeLeft<=0){ clearInterval(timerInterval); submitQuiz(); }
+  },1000);
+}
+
+function renderQuestion(){
+  const q = questions[current];
+  const letters = ['A','B','C','D'];
+  document.getElementById('qNum').textContent = current+1;
+  const pct = ((current+1)/50)*100;
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = (current+1)+' / 50';
+  document.getElementById('btnNext').disabled = userAnswers[current]===null;
+  document.getElementById('btnPrev').disabled = current===0;
+
+  const answered = userAnswers[current] !== null;
+  let html = `<div class="q-number">Question ${current+1} of 50</div>
+    <div class="q-text">${current+1}. ${q.q}</div>
+    <div class="options-grid">`;
+  q.o.forEach((opt,i)=>{
+    let cls = '';
+    if(answered){
+      if(i===q.a) cls='correct';
+      else if(i===userAnswers[current] && userAnswers[current]!==q.a) cls='wrong';
+    } else if(userAnswers[current]===i){ cls='selected'; }
+    html += `<button class="option-btn ${cls}" onclick="selectOption(${i})" id="opt${i}" ${answered?'disabled':''}>
+      <span class="option-label">${letters[i]}</span><span>${opt}</span></button>`;
+  });
+  html += `</div>`;
+  document.getElementById('quizBody').innerHTML = html;
+  document.getElementById('quizBody').scrollTop = 0;
+  window.scrollTo(0,0);
+}
+
+function selectOption(idx){
+  if(userAnswers[current]!==null) return;
+  userAnswers[current] = idx;
+  document.getElementById('btnNext').disabled = false;
+  const q = questions[current];
+  const letters = ['A','B','C','D'];
+  q.o.forEach((_,i)=>{
+    const btn = document.getElementById('opt'+i);
+    btn.disabled = true;
+    if(i===q.a) btn.classList.add('correct');
+    else if(i===idx && idx!==q.a) btn.classList.add('wrong');
+  });
+}
+
+function prevQuestion(){
+  if(current>0){ current--; renderQuestion(); }
+}
+
+function nextQuestion(){
+  if(current<49){ current++; renderQuestion(); }
+  else { clearInterval(timerInterval); submitQuiz(); }
+}
+
+function skipQuestion(){
+  if(current<49){ current++; renderQuestion(); }
+  else { clearInterval(timerInterval); submitQuiz(); }
+}
+
+function submitQuiz(){
+  clearInterval(timerInterval);
+  const correct = questions.filter((q,i)=>userAnswers[i]===q.a).length;
+  const wrong   = questions.filter((q,i)=>userAnswers[i]!==null && userAnswers[i]!==q.a).length;
+  const skipped = questions.filter((_,i)=>userAnswers[i]===null).length;
+  const pct = Math.round((correct/50)*100);
+
+  document.getElementById('scorePercent').textContent = pct+'%';
+  document.getElementById('resultName').textContent = studentName + ' · '+matricNo;
+  document.getElementById('rsCorrect').textContent = correct;
+  document.getElementById('rsWrong').textContent   = wrong;
+  document.getElementById('rsSkip').textContent    = skipped;
+
+  const arc = document.getElementById('ringArc');
+  const offset = 427 - (427 * pct/100);
+  setTimeout(()=>{ arc.style.transition='stroke-dashoffset 1.2s ease'; arc.style.strokeDashoffset=offset; },100);
+
+  let grade, color, remark;
+  if(pct>=70){grade='A';color='var(--correct)';remark='Excellent performance! Outstanding work.';}
+  else if(pct>=60){grade='B';color='var(--accent)';remark='Good performance. Well done!';}
+  else if(pct>=50){grade='C';color='var(--gold)';remark='Average performance. Keep studying!';}
+  else if(pct>=45){grade='D';color='var(--accent2)';remark='Below average. More effort needed.';}
+  else{grade='F';color='var(--wrong)';remark='Fail. Please review the course material.';}
+
+  const gEl = document.getElementById('resultGrade');
+  gEl.textContent = 'GRADE: '+grade;
+  gEl.style.background = color+'22';
+  gEl.style.color = color;
+  gEl.style.border = '1px solid '+color+'55';
+  document.getElementById('resultRemark').textContent = remark;
+
+  // Review
+  const letters=['A','B','C','D'];
+  let rv='';
+  questions.forEach((q,i)=>{
+    const ua=userAnswers[i];
+    const cls = ua===null?'r-skip':ua===q.a?'r-correct':'r-wrong';
+    const userStr = ua===null?'<span style="color:var(--muted)">Skipped</span>'
+      :`<span class="ri-user">${letters[ua]}. ${q.o[ua]}</span>`;
+    rv+=`<div class="review-item ${cls}">
+      <div class="ri-q">${i+1}. ${q.q}</div>
+      <div class="ri-ans">Your answer: ${userStr} &nbsp;|&nbsp; Correct: <strong>${letters[q.a]}. ${q.o[q.a]}</strong></div>
+    </div>`;
+  });
+  document.getElementById('reviewList').innerHTML = rv;
+  show('result');
+  window.scrollTo(0,0);
+}
+
+function retryQuiz(){ show('cover'); }
+</script>
+</body>
+</html>
